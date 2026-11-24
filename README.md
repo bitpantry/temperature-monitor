@@ -2,7 +2,9 @@
 
 A weekend build for anyone who’s ever opened a cooler for the fifth time to check a turkey brine. It grew out of trying [Alton Brown’s fried turkey recipe](https://altonbrown.com/recipes/deep-fried-turkey/). A little Wi-Fi board reads a probe about once a minute; a dashboard shows what’s happening without you lifting the lid.
 
-The project has two parts: [the dashboard and API](dashboard/) and [the board firmware](firmware/BrineMonitor/). Use any compatible WeMos D1 Mini (ESP8266), not an ESP32. If you already have a board and a few resistors, the main thing to buy is the probe.
+The project has two parts: [the dashboard and API](dashboard/) and [the board firmware](firmware/BrineMonitor/). The tested build uses a WeMos D1 Mini (ESP8266). If you already have a board and a few resistors, the main thing to buy is the probe.
+
+**Have an ESP32?** The DS18B20 and the same HTTPS/JSON API can carry over, but the sketch is not drop-in: it uses ESP8266 Wi-Fi/TLS libraries and D1 Mini pin names. An ESP32 port needs matching libraries, repinned wiring, bench testing, and potentially a different enclosure.
 
 **For food use:** use a thermometer and probe suitable for your setup, and independently verify with a reliable food thermometer. A failed sensor, Wi-Fi outage or delayed notification can make the dashboard stale. Neither the app nor a scheduled alert makes a brining method safe. This project only monitors; it does not cool anything or control a fryer.
 
