@@ -1,0 +1,9 @@
+name = "temperature-monitor"
+main = "dist/server/index.js"
+compatibility_date = "2025-06-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "temperature-monitor"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+migrations_dir = "drizzle"

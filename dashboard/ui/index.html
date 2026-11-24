@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Temperature and sensor status dashboard">
+<title>Temperature Monitor</title>
+<link rel="stylesheet" href="/style.css">
+<script src="/app.js" defer></script>
+</head>
+<body>
+<main>
+  <header>
+    <div><h1>Temperature Monitor</h1></div>
+    <p class="status" id="status">Connecting</p>
+  </header>
+  <div id="error" class="banner warning" role="alert" hidden></div>
+  <section id="alert" class="banner" aria-live="polite" hidden><h2 id="alert-title"></h2><p id="alert-copy"></p></section>
+  <section class="panel overview" aria-label="Latest reading and monitoring controls">
+    <div><h2>Latest reading</h2><p id="latest" class="temperature">—</p><p id="latest-time" class="muted">Waiting for data</p></div>
+    <div class="controls"><button id="toggle" hidden disabled>Start monitoring</button><a id="owner-signin" class="muted" href="/manage" target="_top" hidden>Sign in to manage</a><p id="session" class="muted"></p></div>
+  </section>
+  <section class="panel trend" aria-labelledby="trend-title">
+    <div class="section-head"><div><h2 id="trend-title">Temperature trend</h2><p class="muted">Temperatures in °F · Central time</p></div><output id="chart-reading" aria-live="off">Select a reading</output></div>
+    <div class="trend-ranges" role="group" aria-label="Trend range">
+      <button type="button" data-trend-hours="1" aria-pressed="false">1h</button>
+      <button type="button" data-trend-hours="6" aria-pressed="false">6h</button>
+      <button type="button" data-trend-hours="12" aria-pressed="false">12h</button>
+      <button type="button" data-trend-hours="24" aria-pressed="true">24h</button>
+    </div>
+    <p id="chart-empty" class="empty" hidden>No readings in the past 24 hours.</p>
+    <svg id="chart" role="graphics-document" aria-label="Temperature over the past 24 hours. Focus the chart, then use the arrow keys to select readings." tabindex="0"></svg>
+    <p class="hint">Hover, drag, or use the arrow keys to inspect a recorded reading.</p>
+  </section>
+  <section class="panel history" aria-labelledby="history-title">
+    <div class="section-head"><div><h2 id="history-title">Reading history</h2><p class="muted">Newest first · Central time</p></div></div>
+    <table><thead><tr><th scope="col">Recorded</th><th scope="col">Temperature</th><th scope="col">Change</th></tr></thead><tbody id="rows"></tbody></table>
+    <p id="history-empty" class="empty" hidden>No readings to show.</p>
+    <nav aria-label="History pagination"><button id="newer" class="quiet" disabled>Newer</button><span id="page-label">Page 1</span><button id="older" class="quiet" disabled>Older</button></nav>
+  </section>
+</main>
+</body>
+</html>
