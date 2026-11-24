@@ -6,7 +6,7 @@ The project has two parts: [the dashboard and API](dashboard/) and [the board fi
 
 **Have an ESP32?** The DS18B20 and the same HTTPS/JSON API can carry over, but the sketch is not drop-in: it uses ESP8266 Wi-Fi/TLS libraries and D1 Mini pin names. An ESP32 port needs matching libraries, repinned wiring, bench testing, and potentially a different enclosure.
 
-**For food use:** use a thermometer and probe suitable for your setup, and independently verify with a reliable food thermometer. A failed sensor, Wi-Fi outage or delayed notification can make the dashboard stale. Neither the app nor a scheduled alert makes a brining method safe. This project only monitors; it does not cool anything or control a fryer.
+**For food use:** use a thermometer and probe suitable for your setup, and independently verify with a reliable food thermometer. A failed sensor, Wi-Fi outage or delayed notification can make the dashboard stale. Neither the app nor a scheduled alert makes a brining method safe. This project only monitors.
 
 ## 1. Wire the board
 
@@ -30,7 +30,9 @@ Yellow means starting up. Green means the server recently confirmed a reading; a
 
 ## 2. Set up the dashboard
 
-The original used ChatGPT Sites and a D1 database. This copy can use your own Cloudflare Worker with D1 so you do not need access to the original Site. Install Node.js 24 or newer. Then, from the cloned repo:
+The dashboard is a web app with an API. The setup below deploys it to Cloudflare Workers and uses D1 for storage. Node.js 24 or newer is used to build and test it locally. If you want to host it elsewhere, you’ll need a compatible runtime or an adapter for the Worker handler and D1 database calls.
+
+From the cloned repo:
 
 ```sh
 cd dashboard
@@ -50,7 +52,7 @@ npx wrangler deploy
 npx wrangler secret put MONITOR_ADMIN_KEY
 ```
 
-Generate an owner key with `openssl rand -hex 32`, store it in your password manager, and paste it into the **secret prompt**, not a config file. Repeat with a **different** key for `MONITOR_STATUS_KEY` if you want optional monitoring checks. Visit your Worker URL, click **Sign in to manage**, and sign in as `owner` with the owner key. Click **Start monitoring**. The dashboard intentionally exposes read-only temperatures to anyone who can reach its URL; do not associate it with private readings or deploy it publicly if that is unsuitable. Use HTTPS and leave the default owner-auth mode on Cloudflare. The optional `chatgpt-sites` mode is only for a trusted Sites gateway that strips and supplies its authenticated identity headers.
+Generate an owner key with `openssl rand -hex 32`, store it in your password manager, and paste it into the **secret prompt**, not a config file. Repeat with a **different** key for `MONITOR_STATUS_KEY` if you want optional monitoring checks. Visit your Worker URL, click **Sign in to manage**, and sign in as `owner` with the owner key. Click **Start monitoring**. The dashboard intentionally exposes read-only temperatures to anyone who can reach its URL; do not associate it with private readings or deploy it publicly if that is unsuitable. Use HTTPS and keep the default owner sign-in.
 
 ### Make a write-only key for the board
 
@@ -83,7 +85,9 @@ At 115200 baud the serial monitor reports confirmed readings or useful errors wi
 
 ## 4. Optional alerts
 
-The dashboard shows warm at 38°F, critical at 40°F, and stale after five minutes without a reading while armed. There are **no built-in texts**. If you want remote notifications, run a scheduled job on an always-on computer or a hosting service and connect that job to a notification channel you control. The sample status check uses its own read-only key, never the board or owner key. Put `MONITOR_URL` and `MONITOR_STATUS_KEY` in a private file outside the repo and run:
+The dashboard shows warm at 38°F, critical at 40°F, and stale after five minutes without a reading while armed. There are **no built-in texts**. One option is a ChatGPT scheduled task that checks your dashboard every 30 minutes and notifies you if something needs attention. I tested the 30-minute schedule and phone notifications; if you use this approach, make sure your task can reach your read-only dashboard data.
+
+You can also run the included status check on an always-on computer or hosting service and send the result to a notification channel you control. The script uses a separate read-only key. Put `MONITOR_URL` and `MONITOR_STATUS_KEY` in a private file outside the repo and run:
 
 ```sh
 node --env-file=/absolute/path/to/private.env tools/check-status.mjs
@@ -96,5 +100,3 @@ Exit codes: **0** normal, paused, or awaiting first reading; **1** warm; **2** c
 - `dashboard/`: Worker, D1 schema, responsive chart and history page, and API tests.
 - `firmware/BrineMonitor/`: Arduino sketch and a blank configuration template.
 - `tools/`: optional one-shot status check for your own scheduler.
-
-No live deployment or data, Wi-Fi credentials, device keys, or site history are included. The monitor and sketch are provided here for viewing; third-party packages have their own licenses.
